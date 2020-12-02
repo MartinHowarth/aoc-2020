@@ -1,0 +1,14 @@
+[package]
+name = "day2"
+version = "0.1.0"
+authors = ["Martin Howarth <martin.howarth@metaswitch.com>"]
+edition = "2018"
+publish = ["metaswitch"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+recap = "0.1.1"
+serde = "1.0.117"
+# https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
+utils = {path = "../utils"}
