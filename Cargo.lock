@@ -23,6 +23,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "day3"
+version = "0.1.0"
+dependencies = [
+ "reduce",
+ "utils",
+]
+
+[[package]]
 name = "envy"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -103,6 +111,12 @@ dependencies = [
  "regex",
  "syn 0.15.44",
 ]
+
+[[package]]
+name = "reduce"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a4c8549eb79c1fc8c449cb18a2d9b7873a7cb1bf2fcbfe8a3ad8812320544341"
 
 [[package]]
 name = "regex"
