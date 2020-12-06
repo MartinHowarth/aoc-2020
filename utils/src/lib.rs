@@ -20,3 +20,9 @@ where
         .map(|line| line.unwrap())
         .collect()
 }
+
+pub fn group_lines_split_by_empty_line<'a>(
+    lines: &'a Vec<String>,
+) -> impl Iterator<Item = String> + 'a {
+    lines.split(|line| line == "").map(|slice| slice.join(""))
+}
