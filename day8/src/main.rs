@@ -1,23 +1,27 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use utils;
 
 struct Instruction {
     name: String,
     value: i32,
-    call_count: usize,
 }
 
 struct Program {
     accumulator: i32,
     pointer: i32,
     instructions: Vec<Instruction>,
+    called_instructions: HashSet<i32>,
 }
 
 impl Program {
     fn perform_next_instruction(&mut self) -> bool {
-        let mut instruction = self.instructions.get_mut(self.pointer as usize).unwrap();
-        instruction.call_count += 1;
+        if self.called_instructions.contains(&self.pointer) {
+            return true;
+        }
+        self.called_instructions.insert(self.pointer);
+
+        let instruction = self.instructions.get(self.pointer as usize).unwrap();
         if instruction.name == "acc" {
             self.accumulator += instruction.value;
             self.pointer += 1;
@@ -26,10 +30,18 @@ impl Program {
         } else if instruction.name == "nop" {
             self.pointer += 1;
         }
-        instruction.call_count > 1
+        false
     }
 
     fn run_part_1(&mut self) -> i32 {
+        loop {
+            if self.perform_next_instruction() {
+                return self.accumulator;
+            }
+        }
+    }
+
+    fn run_part_2(&mut self) -> i32 {
         loop {
             if self.perform_next_instruction() {
                 return self.accumulator;
@@ -52,9 +64,9 @@ fn parse_lines(lines: &Vec<String>) -> Program {
                     .unwrap()
                     .parse::<i32>()
                     .unwrap(),
-                call_count: 0,
             })
             .collect(),
+        called_instructions: HashSet::new(),
     }
 }
 
