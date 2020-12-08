@@ -15,7 +15,7 @@ struct Program {
 }
 
 impl Program {
-    fn perform_next_instruction(&mut self) -> bool {
+    fn perform_next_instruction_part_1(&mut self) -> bool {
         if self.called_instructions.contains(&self.pointer) {
             return true;
         }
@@ -35,18 +35,61 @@ impl Program {
 
     fn run_part_1(&mut self) -> i32 {
         loop {
-            if self.perform_next_instruction() {
+            if self.perform_next_instruction_part_1() {
                 return self.accumulator;
             }
         }
     }
 
-    fn run_part_2(&mut self) -> i32 {
-        loop {
-            if self.perform_next_instruction() {
-                return self.accumulator;
+    fn reset(&mut self) {
+        self.accumulator = 0;
+        self.pointer = 0;
+        self.called_instructions = HashSet::new();
+    }
+
+    fn perform_next_instruction_part_2(&mut self, corrupted_test: i32) -> bool {
+        if self.called_instructions.contains(&self.pointer) {
+            return true;
+        }
+        self.called_instructions.insert(self.pointer);
+
+        let instruction = self.instructions.get(self.pointer as usize).unwrap();
+        if instruction.name == "acc" {
+            self.accumulator += instruction.value;
+            self.pointer += 1;
+        } else if instruction.name == "jmp" {
+            if corrupted_test == self.pointer {
+                // do "nop" instead
+                self.pointer += 1;
+            } else {
+                self.pointer += instruction.value;
+            }
+        } else if instruction.name == "nop" {
+            if corrupted_test == self.pointer {
+                // do "jmp" instead
+                self.pointer += instruction.value;
+            } else {
+                self.pointer += 1;
             }
         }
+        false
+    }
+
+    fn run_part_2(&mut self) -> i32 {
+        for corrupt_test in (0..self.instructions.len()) {
+            loop {
+                if self.perform_next_instruction_part_2(corrupt_test as i32) {
+                    println!("{} is still infinite", corrupt_test);
+                    self.reset();
+                    break;
+                }
+                if self.pointer == self.instructions.len() as i32 {
+                    println!("{} broke out!", corrupt_test);
+                    return self.accumulator;
+                }
+            }
+        }
+        0
     }
 }
 
@@ -74,7 +117,9 @@ fn part_1(lines: &Vec<String>) {
     println!("Part 1: {}", parse_lines(lines).run_part_1())
 }
 
-fn part_2(lines: &Vec<String>) {}
+fn part_2(lines: &Vec<String>) {
+    println!("Part 2: {}", parse_lines(lines).run_part_2())
+}
 
 fn main() {
     let filename = "day8/src/input.txt";
